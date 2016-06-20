@@ -10,3 +10,7 @@ find_package(Threads REQUIRED)
 add_library(libexecstream exec-stream.cpp ${libtype})
 target_include_directories(libexecstream PUBLIC "${CMAKE_SOURCE_DIR}/include")
 target_link_libraries(libexecstream PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+
+if(NOT MSVC)
+    target_compile_options(libexecstream PRIVATE -fPIC)
+endif()
