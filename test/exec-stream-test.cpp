@@ -26,17 +26,22 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "exec-stream.h"
+#include "libexecstream/exec-stream.h"
 
-#include <vector>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <cstring>
 #include <list>
+#include <limits>
 #include <map>
 #include <string>
 #include <iostream>
 #include <sstream>
 
+#include <vector>
 #include <stdlib.h>
-#include <ctype.h>
+
 
 #ifdef _WIN32
 
@@ -185,7 +190,7 @@ std::string random_string( std::size_t size )
     s.reserve( size );
     srand( 1 );
     while( s.size()<size ) {
-        char c=rand()%CHAR_MAX;
+        char c = rand() % std::numeric_limits<char>::max( );
         if( isprint( c ) && !isspace( c ) ) {
             s+=c;
         }
