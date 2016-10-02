@@ -44,4 +44,11 @@ install( DIRECTORY include/ DESTINATION include )
 
 add_executable( exec-stream-test test/exec-stream-test.cpp ${HEADER_FILES} )
 target_link_libraries( exec-stream-test execstream ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
-add_test( execstram_test, exec-stream-test )
+add_test( execstream_test, exec-stream-test )
+
+add_executable( thread_test_bin test/thread_test.cpp ${HEADER_FILES} )
+target_link_libraries( thread_test_bin execstream ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
+add_test( thread_test, thread_test_bin )
+
+add_executable( thread_test_child test/thread_test_child.cpp ${HEADER_FILES} )
+target_link_libraries( thread_test_child ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
