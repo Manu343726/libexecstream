@@ -9,7 +9,16 @@ else( )
     set( libtype )
 endif( )
 
-find_package( Threads REQUIRED )
+if( ${CMAKE_CXX_COMPILER_ID} STREQUAL 'MSVC' )
+	add_compile_options( -D_WIN32_WINNT=0x0601 ) 
+else( )
+	find_package( Threads REQUIRED )
+	if( THREADS_HAVE_PTHREAD_ARG )
+		set( COMPILER_SPECIFIC_LIBS, "-lpthread" )
+	endif()
+endif()
+
+
 
 add_library( execstream ${libtype} src/exec-stream.cpp )
 target_include_directories( execstream PUBLIC "${CMAKE_SOURCE_DIR}/include" )
@@ -23,6 +32,6 @@ install( TARGETS execstream DESTINATION lib )
 install( DIRECTORY include/ DESTINATION include )
 
 
-add_executable( execstream_test_bin test/exec-stream-test.cpp ${HEADER_FILES} )
-target_link_libraries( execstream_test_bin execstream ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} )
-add_test( execstram_test, execstream_test_bin )
+add_executable( exec-stream-test test/exec-stream-test.cpp ${HEADER_FILES} )
+target_link_libraries( exec-stream-test execstream ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${COMPILER_SPECIFIC_LIBS} )
+add_test( execstram_test, exec-stream-test )
