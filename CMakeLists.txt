@@ -20,7 +20,7 @@ else( )
     set( libtype )
 endif( )
 
-add_library( execstream ${libtype} src/exec-stream.cpp src/display_queue.cpp )
+add_library( execstream ${libtype} src/exec-stream.cpp src/display_queue.cpp src/exec_helper.cpp )
 target_include_directories( execstream PUBLIC "${CMAKE_SOURCE_DIR}/include" )
 target_link_libraries( execstream PUBLIC ${CMAKE_THREAD_LIBS_INIT} )
 

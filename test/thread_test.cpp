@@ -35,37 +35,10 @@
 
 #include "libexecstream/exec-stream.h"
 #include "display_queue.h"
-
-int do_test( ) {
-	daw::display_queue disp;
-	exec_stream_t prog;
-	prog.set_binary_mode( exec_stream_t::s_all );
-	prog.start( "./thread_test_child", "" );
-	auto const disp_out = [&]( ) {
-		std::string line;
-		while( std::getline( prog.out( ), line ).good( ) ) {
-			disp.add_item( daw::display_queue::stream_type_t::out, line );
-		}
-	};
-	auto const disp_err = [&]( ) {
-		std::string line;
-		while( std::getline( prog.err( ), line ).good( ) ) {
-			disp.add_item( daw::display_queue::stream_type_t::err, line );
-		}
-	};
-	std::thread th_out{ disp_out }; 
-	std::thread th_err{ disp_err }; 
-	th_out.join( );
-	th_err.join( );
-	disp.stop( );
-	std::cout << std::flush;
-	std::cerr << std::flush;
-	prog.close( );
-	return prog.exit_code( );
-}
+#include "exec_helper.h"
 
 int main( int, char ** ) {
-	auto result = do_test( );
+	auto result = daw::display_output( "./thread_test_child" );
 	std::cout << "Test returned result: " << result << std::endl;
 	return EXIT_SUCCESS;
 }
