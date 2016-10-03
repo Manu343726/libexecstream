@@ -24,7 +24,7 @@
 #include <string>
 
 #include "libexecstream/exec-stream.h"
-#include "display_queue.h"
+#include "libexecstream/display_queue.h"
 
 namespace daw {
 	int display_output( std::string exec, std::string args  ) {

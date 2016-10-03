@@ -34,8 +34,7 @@
 #include <vector>
 
 #include "libexecstream/exec-stream.h"
-#include "display_queue.h"
-#include "exec_helper.h"
+#include "libexecstream/exec_helper.h"
 
 int main( int, char ** ) {
 	auto result = daw::display_output( "./thread_test_child" );
