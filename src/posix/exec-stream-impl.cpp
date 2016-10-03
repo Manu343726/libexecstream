@@ -39,8 +39,8 @@ struct exec_stream_t::impl_t {
     int m_exit_code;
     unsigned long m_child_timeout;
 
-    buf_t< char > m_child_args;
-    buf_t< char * > m_child_argp;
+    buf_t<char> m_child_args;
+    buf_t<char *> m_child_argp;
     
     pipe_t m_in_pipe;
     pipe_t m_out_pipe;
