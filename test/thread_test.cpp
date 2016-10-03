@@ -21,31 +21,119 @@
 //	SOFTWARE.
 //
 
-#include <thread>
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
 #include <cstdlib>
+#include <cstdint>
 #include <iostream>
+#include <iterator>
+#include <iomanip>
+#include <mutex>
+#include <thread>
+#include <vector>
 
 #include "libexecstream/exec-stream.h"
 
+struct display_queue {
+	enum class stream_type_t { out, err };
+	class q_item {
+		stream_type_t stream_type;
+		std::string line;
+	public:
+		q_item( stream_type_t type, std::string item ):
+			stream_type{ type },
+			line{ std::move( item ) } { }
+
+		void display( ) const {
+			switch( stream_type ) {
+			case stream_type_t::err:
+				std::cerr << line << '\n';
+				break;
+			case stream_type_t::out:
+				std::cout << line << '\n';
+				break;
+			}
+		}
+	};	// q_item
+private:
+	std::mutex m_mutex;
+	std::vector<q_item> items;	
+	std::atomic<bool> m_continue;
+	std::condition_variable m_has_data;
+
+public:
+
+	display_queue( ):
+		m_mutex{ },
+		items{ },
+		m_continue{ true } { }
+
+	void add_item( stream_type_t type, std::string item ) {
+		std::unique_lock<std::mutex> lock{ m_mutex };
+		items.emplace_back( type, std::move( item ) ); 
+		m_has_data.notify_all( );
+	}
+
+	void display_items( ) {
+		if( !items.empty( ) ) {
+			for( auto const & item : items ) {
+				item.display( );
+			}
+			items.clear( );
+		}
+	}
+
+	void start( ) {
+		std::thread bkgrnd( [&]( ) {
+			std::unique_lock<std::mutex> lock{ m_mutex };
+			while( m_continue ) {
+				m_has_data.wait( lock );
+				display_items( );
+			}
+		} );
+		bkgrnd.detach( );
+	}
+
+	void stop( ) {
+		m_continue = false;
+		display_items( );
+	}
+
+	~display_queue( ) {
+		try {
+			stop( );
+		} catch( ... ) { }
+	}
+
+	display_queue( display_queue const & ) = delete;
+	display_queue( display_queue && ) = default;
+	display_queue & operator=( display_queue const & ) = delete;
+	display_queue & operator=( display_queue && ) = default;
+};	// display_queue
+
 int do_test( ) {
+	display_queue disp;
 	exec_stream_t prog;
+	prog.set_binary_mode( exec_stream_t::s_all );
 	prog.start( "./thread_test_child", "" );
-	auto const disp_out = [&prog]( ) {
+	auto const disp_out = [&]( ) {
 		std::string line;
 		while( std::getline( prog.out( ), line ).good( ) ) {
-			std::cout << line << '\n';
+			disp.add_item( display_queue::stream_type_t::out, line );
 		}
 	};
-	auto const disp_err = [&prog]( ) {
+	auto const disp_err = [&]( ) {
 		std::string line;
 		while( std::getline( prog.err( ), line ).good( ) ) {
-			std::cerr << line << std::endl;
+			disp.add_item( display_queue::stream_type_t::err, line );
 		}
 	};
 	std::thread th_out{ disp_out }; 
 	std::thread th_err{ disp_err }; 
 	th_out.join( );
 	th_err.join( );
+	disp.stop( );
 	std::cout << std::flush;
 	std::cerr << std::flush;
 	prog.close( );

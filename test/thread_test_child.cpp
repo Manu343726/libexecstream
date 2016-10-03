@@ -26,18 +26,26 @@
 #include <iostream>
 
 int main( int, char ** ) {
-	std::thread th1 = std::thread( []( ){
-		for( size_t n = 0; n<10000; ++n ) {
-			std::cout << "O: The value currently is " << n << '\n';
-		}
-	} );
+//	std::thread th1 = std::thread( []( ){
+//		for( size_t n = 0; n<10000; ++n ) {
+//			std::cout << "O: The value currently is " << n << '\n';
+//		}
+//	} );
+//
+//	std::thread th2 = std::thread( []( ){
+//		for( size_t n = 10000; n<20000; ++n ) {
+//			std::cerr << "E: The value currently is " << n << '\n';
+//		}
+//	} );
+//	th1.join( );
+//	th2.join( );
 
-	std::thread th2 = std::thread( []( ){
-		for( size_t n = 10000; n<20000; ++n ) {
-			std::cerr << "E: The value currently is " << n << '\n';
+	for( size_t n=0; n<150; ++n ) {
+		if( n % 2 == 0 ) {
+			std::cout << "stdout: " << n << std::endl;
+		} else {
+			std::cerr << "stderr: " << n << std::endl;
 		}
-	} );
-	th1.join( );
-	th2.join( );
+	}
 	return EXIT_SUCCESS;
 }
