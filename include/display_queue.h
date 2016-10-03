@@ -33,39 +33,36 @@
 #include <thread>
 #include <vector>
 
-#include "libexecstream/exec-stream.h"
-#include "display_queue.h"
+namespace daw {
+	struct display_queue {
+		enum class stream_type_t { out, err };
 
-int do_test( ) {
-	daw::display_queue disp;
-	exec_stream_t prog;
-	prog.set_binary_mode( exec_stream_t::s_all );
-	prog.start( "./thread_test_child", "" );
-	auto const disp_out = [&]( ) {
-		std::string line;
-		while( std::getline( prog.out( ), line ).good( ) ) {
-			disp.add_item( daw::display_queue::stream_type_t::out, line );
-		}
-	};
-	auto const disp_err = [&]( ) {
-		std::string line;
-		while( std::getline( prog.err( ), line ).good( ) ) {
-			disp.add_item( daw::display_queue::stream_type_t::err, line );
-		}
-	};
-	std::thread th_out{ disp_out }; 
-	std::thread th_err{ disp_err }; 
-	th_out.join( );
-	th_err.join( );
-	disp.stop( );
-	std::cout << std::flush;
-	std::cerr << std::flush;
-	prog.close( );
-	return prog.exit_code( );
-}
+	private:
+		class q_item {
+			stream_type_t stream_type;
+			std::string line;
+		public:
+			q_item( stream_type_t type, std::string item ) noexcept;
 
-int main( int, char ** ) {
-	auto result = do_test( );
-	std::cout << "Test returned result: " << result << std::endl;
-	return EXIT_SUCCESS;
+			void display( ) const;
+		};	// q_item
+
+		std::mutex m_mutex;
+		std::vector<q_item> items;	
+		std::atomic<bool> m_continue;
+		std::condition_variable m_has_data;
+
+	public:
+		display_queue( );
+		void add_item( stream_type_t type, std::string item );
+		void display_items( );
+		void start( );
+		void stop( );
+		~display_queue( ) noexcept;
+
+		display_queue( display_queue const & ) = delete;
+		display_queue( display_queue && ) = default;
+		display_queue & operator=( display_queue const & ) = delete;
+		display_queue & operator=( display_queue && ) = default;
+	};	// display_queue
 }

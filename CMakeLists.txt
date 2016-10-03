@@ -14,23 +14,13 @@ else( )
 endif( )
 
 option( LIBEXECSTREAM_SHARED "Build shared library" OFF )
-
 if( LIBEXECSTREAM_SHARED )
     set( libtype SHARED )
 else( )
     set( libtype )
 endif( )
 
-if( ${CMAKE_CXX_COMPILER_ID} STREQUAL 'MSVC' )
-	add_compile_options( -D_WIN32_WINNT=0x0601 ) 
-else( )
-	find_package( Threads REQUIRED )
-	if( THREADS_HAVE_PTHREAD_ARG )
-		set( COMPILER_SPECIFIC_LIBS, "-lpthread" )
-	endif()
-endif()
-
-add_library( execstream ${libtype} src/exec-stream.cpp )
+add_library( execstream ${libtype} src/exec-stream.cpp src/display_queue.cpp )
 target_include_directories( execstream PUBLIC "${CMAKE_SOURCE_DIR}/include" )
 target_link_libraries( execstream PUBLIC ${CMAKE_THREAD_LIBS_INIT} )
 
@@ -41,14 +31,13 @@ endif( )
 install( TARGETS execstream DESTINATION lib )
 install( DIRECTORY include/ DESTINATION include )
 
-
-add_executable( exec-stream-test test/exec-stream-test.cpp ${HEADER_FILES} )
+add_executable( exec-stream-test test/exec-stream-test.cpp )
 target_link_libraries( exec-stream-test execstream ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
 add_test( execstream_test, exec-stream-test )
 
-add_executable( thread_test_bin test/thread_test.cpp ${HEADER_FILES} )
+add_executable( thread_test_bin test/thread_test.cpp )
 target_link_libraries( thread_test_bin execstream ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
 add_test( thread_test, thread_test_bin )
 
-add_executable( thread_test_child test/thread_test_child.cpp ${HEADER_FILES} )
+add_executable( thread_test_child test/thread_test_child.cpp )
 target_link_libraries( thread_test_child ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
