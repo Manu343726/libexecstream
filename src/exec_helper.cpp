@@ -31,8 +31,7 @@ namespace daw {
 		daw::display_queue disp;
 		exec_stream_t prog;
 		prog.set_binary_mode( exec_stream_t::s_all );
-		prog.set_wait_timeout( exec_stream_t::s_out, std::numeric_limits<exec_stream_t::timeout_t>::max( ) );
-		prog.set_wait_timeout( exec_stream_t::s_err, std::numeric_limits<exec_stream_t::timeout_t>::max( ) );
+		prog.set_wait_timeout( exec_stream_t::s_in|exec_stream_t::s_out|exec_stream_t::s_err, std::numeric_limits<exec_stream_t::timeout_t>::max( ) );
 		prog.start( std::move( exec ), std::move( args ) );
 		auto const disp_out = [&]( ) {
 			std::string line;
