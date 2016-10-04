@@ -63,7 +63,7 @@ namespace daw {
 		std::thread bkgrnd( [&]( ) {
 			std::unique_lock<std::mutex> lock{ m_mutex };
 			while( m_continue ) {
-				m_has_data.wait( lock );
+				m_has_data.wait_for( lock, std::chrono::seconds( 6000 ) );
 				display_items( );
 			}
 		} );
