@@ -453,7 +453,7 @@ int main( int argc, char ** argv )
     // do not test for specific error message text if it is not in english
     bool english_error_messages=check_if_english_error_messages();
 
-    std::string program="./exec-stream-test";
+    std::string program="./bin/exec-stream-test";
     int n_failed=42;
 
     // the tests begin here
