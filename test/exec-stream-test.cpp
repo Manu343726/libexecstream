@@ -39,6 +39,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cctype>
 #include <cstring>
 #include <climits>
+#include <cstdio>
 
 #ifdef _WIN32
 
