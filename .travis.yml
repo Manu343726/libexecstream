@@ -12,5 +12,5 @@ install:
   - cmake --version
 
 script:
-  - conan test_package
+  - conan test_package --build=outdated
 
