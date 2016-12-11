@@ -1,3 +1,7 @@
+env:
+  - SHARED=True
+  - SHARED=False
+
 install:
   - pip install --user conan && export PATH=$PATH:$HOME/.local/bin
   - conan --version
@@ -12,5 +16,4 @@ install:
   - cmake --version
 
 script:
-  - conan test_package --build=outdated
-
+  - conan test_package --build=outdated --options libexecstream:shared=$SHARED
