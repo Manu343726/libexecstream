@@ -8,5 +8,5 @@ include(${CONAN_CMAKE-UTILS_ROOT}/conan.cmake)
 
 add_conan_library(libexecstream)
 
-add_executable(exec-stream-test exec-stream-test.cpp)
-target_link_libraries(exec-stream-test PRIVATE libexecstream-conan)
+add_executable(example main.cpp)
+target_link_libraries(example PRIVATE libexecstream-conan)

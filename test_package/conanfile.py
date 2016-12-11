@@ -9,7 +9,7 @@ class TestLibExecStream(ConanFile):
     settings = 'os', 'compiler', 'build_type', 'arch'
     requires = 'libexecstream/{}@{}/{}'.format(version, user, channel), 'cmake-utils/0.0.0@Manu343726/testing'
     generators = 'cmake'
-    test_exec = 'exec-stream-test'
+    test_exec = 'example'
 
     def build(self):
         cmake = CMake(self.settings)
