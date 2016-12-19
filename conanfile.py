@@ -13,11 +13,11 @@ class LibExecStream(ConanFile):
     exports = "include*", "src*", "test*", "CMakeLists.txt", "README.md"
 
     def build(self):
-	cmake = CMake(self.settings)
+        cmake = CMake(self.settings)
 
         shared_lib = '-DLIBEXECSTREAM_SHARED=' + ('TRUE' if self.options.shared else 'FALSE')
 
-	self.run('pwd && cmake %s %s %s' % (self.conanfile_directory, cmake.command_line, shared_lib))
+        self.run('pwd && cmake %s %s %s' % (self.conanfile_directory, cmake.command_line, shared_lib))
         self.run("cmake --build . %s" % cmake.build_config)
 
     def package(self):
